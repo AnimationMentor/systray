@@ -61,13 +61,14 @@ const char *m_initialHint;
     self.statusItem = [[NSStatusBar systemStatusBar] statusItemWithLength:NSVariableStatusItemLength];
 
     // Useful for debugging if icon loading is broken (e.g., icons don't exist)
-    //[self.statusItem setTitle:@"SystrayTest"];
+    [self.statusItem setTitle:@"SystrayTest"];
 
     // Set up a general click handler - this will happen in addition to any menu
     [self.statusItem setAction:@selector(clicked:)];
 
     // Create our menu and add some items
-    NSMenu *statusMenu = [[[NSMenu allocWithZone:[NSMenu menuZone]] initWithTitle:@"Custom"] autorelease];
+    //NSMenu *statusMenu = [[[NSMenu allocWithZone:[NSMenu menuZone]] initWithTitle:@"Custom"] autorelease];
+    NSMenu *statusMenu = [[[NSMenu alloc] initWithTitle:@"Custom"] autorelease];
     [statusMenu setAutoenablesItems:NO];
     
     // TODO: the app is now solely responsible for managing termination, so we don't add the
@@ -96,7 +97,8 @@ const char *m_initialHint;
     callbackInfo.callback = callback;
     callbackInfo.enabled = enabled;
     callbackInfo.checked = checked;
-    NSMenuItem *newItem = [[[NSMenuItem allocWithZone:[NSMenu menuZone]] initWithTitle:item action:@selector(menuItem:) keyEquivalent:@""] autorelease];
+    //NSMenuItem *newItem = [[[NSMenuItem allocWithZone:[NSMenu menuZone]] initWithTitle:item action:@selector(menuItem:) keyEquivalent:@""] autorelease];
+    NSMenuItem *newItem = [[[NSMenuItem alloc] initWithTitle:item action:@selector(menuItem:) keyEquivalent:@""] autorelease];
     if (enabled) {
         [newItem setEnabled:YES];
     } else {
