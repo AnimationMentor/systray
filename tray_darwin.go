@@ -22,6 +22,42 @@ void setHint(const char *hint);
 */
 import "C"
 
+type _Systray struct {
+	iconPath          string
+	currentIcon       string
+	currentHint       string
+	isExiting         bool
+	isCreated         bool
+	menuItemCallbacks []CallbackInfo
+	lclick            func()
+	rclick            func()
+	dclick            func()
+}
+
+func _NewSystray(iconPath string, clientPath string) *_Systray {
+	tray, err := _NewSystrayEx(iconPath)
+	if err != nil {
+		panic(err)
+	}
+	return tray
+}
+
+func _NewSystrayEx(iconPath string) (*_Systray, error) {
+	ni := &_Systray{
+		iconPath:          iconPath,
+		currentIcon:       "",
+		currentHint:       "",
+		isExiting:         false,
+		isCreated:         false,
+		menuItemCallbacks: make([]CallbackInfo, 0, 10),
+		lclick:            func() {},
+		rclick:            func() {},
+		dclick:            func() {},
+	}
+	
+	return ni, nil
+}
+
 func (p *_Systray) Stop() error {
 	C.stopApplication()
 	return nil
@@ -90,31 +126,6 @@ func (p *_Systray) Run() error {
 	p.isExiting = true
 
 	return nil
-}
-
-func _NewSystray(iconPath string, clientPath string) *_Systray {
-	tray, err := _NewSystrayEx(iconPath)
-	if err != nil {
-		panic(err)
-	}
-	return tray
-}
-
-func _NewSystrayEx(iconPath string) (*_Systray, error) {
-	ni := &_Systray{iconPath, "", "", false, false, make([]CallbackInfo, 0, 10), func() {}, func() {}, func() {}}
-	return ni, nil
-}
-
-type _Systray struct {
-	iconPath          string
-	currentIcon       string
-	currentHint       string
-	isExiting         bool
-	isCreated         bool
-	menuItemCallbacks []CallbackInfo
-	lclick            func()
-	rclick            func()
-	dclick            func()
 }
 
 func (p *_Systray) insertMenuItem(info CallbackInfo, index int) {
