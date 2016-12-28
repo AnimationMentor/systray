@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"os"
+
 	"github.com/xilp/systray"
 )
 

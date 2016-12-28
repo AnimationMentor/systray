@@ -35,11 +35,10 @@ func (p *_Systray) Run() error {
 }
 
 func (p *_Systray) OnClick(fun func()) {
-    p.lclick = fun
-    p.rclick = fun
-    p.dclick = fun
+	p.lclick = fun
+	p.rclick = fun
+	p.dclick = fun
 }
-
 
 func (p *_Systray) ClearSystrayMenuItems() {
 }

@@ -1,18 +1,16 @@
 package systray
 
 func New(iconPath string, clientPath string) *Systray {
-    return &Systray{_NewSystray(iconPath, clientPath)}
+	return &Systray{_NewSystray(iconPath, clientPath)}
 }
 
 type Systray struct {
-    *_Systray
+	*_Systray
 }
-
 
 type CallbackInfo struct {
-    ItemName string
-    Callback func()
-    Disabled bool
-    Checked bool
+	ItemName string
+	Callback func()
+	Disabled bool
+	Checked  bool
 }
-
