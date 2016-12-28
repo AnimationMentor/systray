@@ -44,11 +44,11 @@ func (p *_SystraySvr) OnClick(fun func()) {
 }
 
 func _NewSystraySvr(iconPath string, clientPath string, port int) *_SystraySvr {
-	return &_SystraySvr{iconPath, clientPath, port, make(map[net.Conn]bool), nil, func(){}, sync.Mutex{}}
+	return &_SystraySvr{iconPath, clientPath, port, make(map[net.Conn]bool), nil, func() {}, sync.Mutex{}}
 }
 
 func (p *_SystraySvr) serve() error {
-	ln, err := net.Listen("tcp", ":" + strconv.Itoa(p.port))
+	ln, err := net.Listen("tcp", ":"+strconv.Itoa(p.port))
 	if err != nil {
 		return err
 	}
@@ -153,13 +153,12 @@ func (p *_SystraySvr) received(cmd map[string]string) {
 func (p *_SystraySvr) CreateSystrayMenu(items map[string]func()) {
 }
 
-
 type _SystraySvr struct {
-	iconPath string
+	iconPath   string
 	clientPath string
-	port int
-	conns map[net.Conn]bool
-	lastest []byte
-	fclicked func()
-	lock sync.Mutex
+	port       int
+	conns      map[net.Conn]bool
+	lastest    []byte
+	fclicked   func()
+	lock       sync.Mutex
 }

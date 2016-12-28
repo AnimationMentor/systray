@@ -126,8 +126,8 @@ func (p *_Systray) WinProc(hwnd HWND, msg uint32, wparam uintptr, lparam uintptr
 			}
 		case WM_RBUTTONUP:
 			p.rclick()
-		//case WM_LBUTTONDOWN:
-		//	p.lclick()
+			//case WM_LBUTTONDOWN:
+			//	p.lclick()
 		}
 	case WM_COMMAND:
 		cmdMsgId := int(wparam & 0xffff)
@@ -310,7 +310,6 @@ func RegisterWindow(name string, proc WindowProc) error {
 // TODO: Resolve tab vs space
 func (p *_Systray) AddSystrayMenuItems(items []CallbackInfo) {
 
-
 	// Add callbacks to our list, mapping them to the id range dynamically
 	for _, info := range items {
 		p.menuItemCallbacks = append(p.menuItemCallbacks, info)
@@ -324,7 +323,7 @@ func (p *_Systray) ClearSystrayMenuItems() {
 func (p *_Systray) displaySystrayMenu() {
 	var ret uintptr
 	var err uintptr
-	
+
 	menu, _, _ := CreatePopupMenu.Call()
 	p.popupMenu = menu
 	for index, callbackInfo := range p.menuItemCallbacks {
@@ -343,7 +342,7 @@ func (p *_Systray) displaySystrayMenu() {
 			return
 		}
 	}
-	
+
 	var pos POINT
 	ret, _, _ = GetCursorPos.Call(uintptr(unsafe.Pointer(&pos)))
 	if ret == 0 {
