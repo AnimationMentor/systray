@@ -12,10 +12,14 @@ import (
 #cgo windows CFLAGS: -DWIN32
 #cgo darwin CFLAGS: -DDARWIN -x objective-c
 #cgo darwin LDFLAGS: -framework Cocoa
+
 #include <stdlib.h>
-void runApplication(const char *title, const char *initialIcon, const char *initialHint, void *manager);
+
+typedef uint64_t ManagerId;
+
+void runApplication(const char *title, const char *initialIcon, const char *initialHint, ManagerId manager);
 void stopApplication(void);
-void addSystrayMenuItem(const char *item, void *, unsigned int index, unsigned char enabled, unsigned char checked);
+void addSystrayMenuItem(const char *item, ManagerId, unsigned int index, unsigned char enabled, unsigned char checked);
 void clearSystrayMenuItems(void);
 void setIcon(const char *path);
 void setHint(const char *hint);
@@ -32,6 +36,7 @@ type _Systray struct {
 	lclick            func()
 	rclick            func()
 	dclick            func()
+	refId             refId
 }
 
 func _NewSystray(iconPath string, clientPath string) *_Systray {
@@ -54,7 +59,10 @@ func _NewSystrayEx(iconPath string) (*_Systray, error) {
 		rclick:            func() {},
 		dclick:            func() {},
 	}
-	
+
+	// Register and track a reference to this instance
+	ni.refId = gSystrays.Add(ni)
+
 	return ni, nil
 }
 
@@ -119,7 +127,7 @@ func (p *_Systray) Run() error {
 	// execute on the main thread.
 	// We call LockOSThread() here just in case, but, really, call it earlier!
 	runtime.LockOSThread()
-	C.runApplication(cTitle, cIconPath, cTitle, unsafe.Pointer(p))
+	C.runApplication(cTitle, cIconPath, cTitle, C.ManagerId(p.refId))
 	runtime.UnlockOSThread()
 
 	// If reached, user clicked Exit
@@ -157,7 +165,7 @@ func (p *_Systray) addItemToNativeMenu(info CallbackInfo, index int) {
 	} else {
 		cChecked = C.uchar(0)
 	}
-	C.addSystrayMenuItem(cItemName, unsafe.Pointer(p), cIndex, cEnabled, cChecked)
+	C.addSystrayMenuItem(cItemName, C.ManagerId(p.refId), cIndex, cEnabled, cChecked)
 }
 
 func (p *_Systray) AddSystrayMenuItems(items []CallbackInfo) {
@@ -186,23 +194,29 @@ func (p *_Systray) handleMenuClick(index int) {
  * hooks.
  */
 //export menuClickCallback
-func menuClickCallback(manager unsafe.Pointer, index int) {
-	if manager != nil {
-		p := (*_Systray)(manager)
-		p.handleMenuClick(index)
+func menuClickCallback(id refId, index int) {
+	manager, ok := gSystrays.Get(id)
+	if !ok {
+		return
 	}
+
+	manager.handleMenuClick(index)
 }
 
 //export menuCreatedCallback
-func menuCreatedCallback(manager unsafe.Pointer) {
-	if manager != nil {
-		p := (*_Systray)(manager)
-		p.isCreated = true
-		// Add all previously registered callbacks to the menu
-		for idx, info := range p.menuItemCallbacks {
-			println("Adding callback for", info.ItemName)
-			p.addItemToNativeMenu(info, idx)
-		}
-		p.SetTooltip(p.currentHint)
+func menuCreatedCallback(id refId) {
+	manager, ok := gSystrays.Get(id)
+	if !ok {
+		return
 	}
+
+	manager.isCreated = true
+
+	// Add all previously registered callbacks to the menu
+	for idx, info := range manager.menuItemCallbacks {
+		println("Adding callback for", info.ItemName)
+		manager.addItemToNativeMenu(info, idx)
+	}
+
+	manager.SetTooltip(manager.currentHint)
 }
