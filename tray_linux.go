@@ -10,6 +10,8 @@ type _Systray struct {
 	dclick func()
 }
 
+func (p *_Systray) destroy() {}
+
 func (p *_Systray) Show(file string, hint string) error {
 	return nil
 }

@@ -7,6 +7,20 @@ import (
 	"unsafe"
 )
 
+type _Systray struct {
+	iconPath          string
+	id                uint32
+	mhwnd             uintptr
+	hwnd              uintptr
+	popupMenu         uintptr
+	menuItemCallbacks []CallbackInfo
+	lclick            func()
+	rclick            func()
+	dclick            func()
+}
+
+func (p *_Systray) destroy() {}
+
 func (p *_Systray) Stop() error {
 	nid := NOTIFYICONDATA{
 		UID:  p.id,
@@ -245,18 +259,6 @@ func _NewSystrayEx(iconPath string) (*_Systray, error) {
 	ni.hwnd = hwnd
 
 	return ni, nil
-}
-
-type _Systray struct {
-	iconPath          string
-	id                uint32
-	mhwnd             uintptr
-	hwnd              uintptr
-	popupMenu         uintptr
-	menuItemCallbacks []CallbackInfo
-	lclick            func()
-	rclick            func()
-	dclick            func()
 }
 
 func NewIconFromFile(filePath string) (uintptr, error) {

@@ -3,7 +3,8 @@ package systray
 import "runtime"
 
 type Systray struct {
-	*_Systray
+	// platform-specific implementation
+	systrayer
 }
 
 // systrayer interface represents the public
@@ -26,14 +27,14 @@ type systrayer interface {
 }
 
 func New(iconPath string, clientPath string) *Systray {
+	// Wrap the platform-specific implementation in a
+	// public concrete type
 	st := &Systray{_NewSystray(iconPath, clientPath)}
 
 	// Track the cleanup of the public Systray instance,
 	// so that we can decref the wrapped private instance
 	runtime.SetFinalizer(st, func(ptr *Systray) {
-		if ptr._Systray != nil {
-			gSystrays.Decref(ptr._Systray.refId)
-		}
+		ptr.destroy()
 	})
 
 	return st
