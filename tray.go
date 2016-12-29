@@ -6,6 +6,25 @@ type Systray struct {
 	*_Systray
 }
 
+// systrayer interface represents the public
+// and private interface needed for a platform
+// specific systray implementation
+type systrayer interface {
+	Show(file, hint string) error
+	Stop() error
+	SetIcon(file string) error
+	SetTooltip(tooltip string) error
+	SetVisible(visible bool) error
+	Run() error
+	OnClick(fun func())
+	ClearSystrayMenuItems()
+	AddSystrayMenuItems(items []CallbackInfo)
+
+	// destroy gives implementation a chance to
+	// clean up resources
+	destroy()
+}
+
 func New(iconPath string, clientPath string) *Systray {
 	st := &Systray{_NewSystray(iconPath, clientPath)}
 
