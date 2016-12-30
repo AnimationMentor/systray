@@ -66,6 +66,12 @@ func _NewSystrayEx(iconPath string) (*_Systray, error) {
 	return ni, nil
 }
 
+func (p *_Systray) destroy() {
+	if p != nil {
+		gSystrays.Decref(p.refId)
+	}
+}
+
 func (p *_Systray) Stop() error {
 	C.stopApplication()
 	return nil
