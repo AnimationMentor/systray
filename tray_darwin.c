@@ -73,7 +73,7 @@ const char *m_initialHint;
     self.statusItem = [[NSStatusBar systemStatusBar] statusItemWithLength:NSVariableStatusItemLength];
 
     // Useful for debugging if icon loading is broken (e.g., icons don't exist)
-    [self.statusItem setTitle:@"SystrayTest"];
+    //[self.statusItem setTitle:@"SystrayTest"];
 
     // Set up a general click handler - this will happen in addition to any menu
     [self.statusItem setAction:@selector(clicked:)];
